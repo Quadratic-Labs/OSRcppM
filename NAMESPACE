@@ -1,0 +1,3 @@
+useDynLib(OSRcppM)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)

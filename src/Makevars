@@ -1,0 +1,6 @@
+PKG_CXXFLAGS=-fPIC -std=c++1y -stdlib=libc++
+PKG_LIBS=-losrm -lboost_filesystem-mt -lboost_iostreams-mt -lboost_system-mt
+PKG_LIBS+=-lboost_thread-mt -ltbb -ltbbmalloc -lz
+PKG_CPPFLAGS=-I/usr/local/include -I/usr/local/include/osrm
+PKG_CPPFLAGS+=-I/usr/local/include/osrm-backendthird-party/libosmium/include
+PKG_CPPFLAGS+=-I/usr/local/include/luabind -I/usr/local/include/lua5.1
