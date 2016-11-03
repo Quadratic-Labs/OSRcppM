@@ -18,3 +18,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// OSRMrouteDF
+Rcpp::NumericVector OSRMrouteDF(const Rcpp::NumericVector& xlon, const Rcpp::NumericVector& xlat, const Rcpp::NumericVector& ylon, const Rcpp::NumericVector& ylat, std::string OSRMdata, std::string measure);
+RcppExport SEXP OSRcppM_OSRMrouteDF(SEXP xlonSEXP, SEXP xlatSEXP, SEXP ylonSEXP, SEXP ylatSEXP, SEXP OSRMdataSEXP, SEXP measureSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type xlon(xlonSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type xlat(xlatSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ylon(ylonSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ylat(ylatSEXP);
+    Rcpp::traits::input_parameter< std::string >::type OSRMdata(OSRMdataSEXP);
+    Rcpp::traits::input_parameter< std::string >::type measure(measureSEXP);
+    rcpp_result_gen = Rcpp::wrap(OSRMrouteDF(xlon, xlat, ylon, ylat, OSRMdata, measure));
+    return rcpp_result_gen;
+END_RCPP
+}

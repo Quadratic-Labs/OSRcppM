@@ -5,3 +5,7 @@ OSRMroute <- function(FromDF, ToDF, OSRMdata) {
     .Call('OSRcppM_OSRMroute', PACKAGE = 'OSRcppM', FromDF, ToDF, OSRMdata)
 }
 
+OSRMrouteDF <- function(xlon, xlat, ylon, ylat, OSRMdata, measure = "distance") {
+    .Call('OSRcppM_OSRMrouteDF', PACKAGE = 'OSRcppM', xlon, xlat, ylon, ylat, OSRMdata, measure)
+}
+

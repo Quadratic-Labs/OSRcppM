@@ -84,3 +84,56 @@ Rcpp::List OSRMroute(Rcpp::DataFrame FromDF,
   return Rcpp::List::create(Rcpp::Named("meters") = dist,
 			    Rcpp::Named("seconds") = time);
 }
+
+// [[Rcpp::export]]
+Rcpp::NumericVector OSRMrouteDF(const Rcpp::NumericVector& xlon,
+				const Rcpp::NumericVector& xlat,
+				const Rcpp::NumericVector& ylon,
+				const Rcpp::NumericVector& ylat,
+				std::string OSRMdata,
+				std::string measure = "distance"
+				) {
+
+  using namespace osrm;
+
+  // set up configuration based on pre-compilied OSRM data
+  EngineConfig config;
+  config.storage_config = {OSRMdata};
+  config.use_shared_memory = false;
+  OSRM osrm{config};
+
+  // init out vector
+  int n = xlat.size();
+  Rcpp::NumericVector out(n);
+
+  for (int i = 0; i < n; i++) {
+
+    // init route parameters
+    RouteParameters params;
+
+    params.coordinates.push_back({util::FloatLongitude{xlon[i]},
+	  util::FloatLatitude{xlat[i]}});
+    params.coordinates.push_back({util::FloatLongitude{ylon[i]},
+	  util::FloatLatitude{ylat[i]}});
+
+    // init JSON response object
+    json::Object result;
+
+    // compute route
+    const auto status = osrm.Route(params, result);
+    auto &routes = result.values["routes"].get<json::Array>();
+
+    // take first response which is shortest (?) trip
+    auto &route = routes.values.at(0).get<json::Object>();
+
+    // pull chosen measure (distance or duration)
+    const auto meas = route.values[measure].get<json::Number>().value;
+
+    // store in matrices
+    out[i] = meas;
+
+  }
+
+  return out;
+
+}
