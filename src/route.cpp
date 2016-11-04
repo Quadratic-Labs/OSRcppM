@@ -86,13 +86,76 @@ Rcpp::List OSRMroute(Rcpp::DataFrame FromDF,
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector OSRMrouteDF(const Rcpp::NumericVector& xlon,
-				const Rcpp::NumericVector& xlat,
-				const Rcpp::NumericVector& ylon,
-				const Rcpp::NumericVector& ylat,
-				std::string OSRMdata,
-				std::string measure = "distance"
-				) {
+Rcpp::DataFrame OSRMrouteDF(Rcpp::DataFrame DF,
+			    std::string OSRMdata,
+			    std::string fromLon = "flon",
+			    std::string fromLat = "flat",
+			    std::string toLon = "tlon",
+			    std::string toLat = "tlat"
+			    ) {
+
+  using namespace osrm;
+
+  // set up configuration based on pre-compilied OSRM data
+  EngineConfig config;
+  config.storage_config = {OSRMdata};
+  config.use_shared_memory = false;
+  OSRM osrm{config};
+
+  // init vectors for coordinates
+  Rcpp::NumericVector xlat = DF["flat"];
+  Rcpp::NumericVector xlon = DF["flon"];
+  Rcpp::NumericVector ylat = DF["tlat"];
+  Rcpp::NumericVector ylon = DF["tlon"];
+
+  int n = xlat.size();
+  Rcpp::NumericVector dist(n);
+  Rcpp::NumericVector time(n);
+
+  for (int i = 0; i < n; i++) {
+
+      // init route parameters
+      RouteParameters params;
+
+      params.coordinates.push_back({util::FloatLongitude{xlon[i]},
+	    util::FloatLatitude{xlat[i]}});
+      params.coordinates.push_back({util::FloatLongitude{ylon[i]},
+	    util::FloatLatitude{ylat[i]}});
+
+      // init JSON response object
+      json::Object result;
+
+      // compute route
+      const auto status = osrm.Route(params, result);
+      auto &routes = result.values["routes"].get<json::Array>();
+
+      // take first response which is shortest (?) trip
+      auto &route = routes.values.at(0).get<json::Object>();
+      const auto distance = route.values["distance"].get<json::Number>().value;
+      const auto duration = route.values["duration"].get<json::Number>().value;
+
+      // store in matrices
+      dist[i] = distance;
+      time[i] = duration;
+    }
+
+  // add row and column names
+  return Rcpp::DataFrame::create(Rcpp::Named("flon") = fromLon,
+				 Rcpp::Named("flat") = fromLat,
+				 Rcpp::Named("tlon") = toLon,
+				 Rcpp::Named("tlat") = toLat,
+				 Rcpp::Named("meters") = dist,
+				 Rcpp::Named("seconds") = time);
+}
+
+// [[Rcpp::export]]
+Rcpp::NumericVector OSRMrouteVec(const Rcpp::NumericVector& xlon,
+				 const Rcpp::NumericVector& xlat,
+				 const Rcpp::NumericVector& ylon,
+				 const Rcpp::NumericVector& ylat,
+				 std::string OSRMdata,
+				 std::string measure = "distance"
+				 ) {
 
   using namespace osrm;
 
