@@ -140,10 +140,10 @@ Rcpp::DataFrame OSRMrouteDF(Rcpp::DataFrame DF,
     }
 
   // add row and column names
-  return Rcpp::DataFrame::create(Rcpp::Named("flon") = fromLon,
-				 Rcpp::Named("flat") = fromLat,
-				 Rcpp::Named("tlon") = toLon,
-				 Rcpp::Named("tlat") = toLat,
+  return Rcpp::DataFrame::create(Rcpp::Named("flon") = xlon,
+				 Rcpp::Named("flat") = xlat,
+				 Rcpp::Named("tlon") = ylon,
+				 Rcpp::Named("tlat") = ylat,
 				 Rcpp::Named("meters") = dist,
 				 Rcpp::Named("seconds") = time);
 }

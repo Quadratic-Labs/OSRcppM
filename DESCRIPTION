@@ -1,7 +1,7 @@
 Package: OSRcppM
 Type: Package
 Title: Using Open Source Routing Machine C++ Interface in R
-Version: 0.3
+Version: 0.4
 Date: 2016-11-04
 Author: Benjamin Skinner
 Maintainer: Benjamin Skinner <b.skinner@vanderbilt.edu>
