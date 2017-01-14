@@ -6,3 +6,4 @@
 \.DS_Store$
 ^README\.md$
 ^.travis\.yml$
+^builds$
