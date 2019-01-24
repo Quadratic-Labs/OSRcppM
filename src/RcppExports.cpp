@@ -6,47 +6,26 @@
 using namespace Rcpp;
 
 // OSRMroute
-Rcpp::List OSRMroute(Rcpp::DataFrame FromDF, Rcpp::DataFrame ToDF, std::string OSRMdata);
-RcppExport SEXP OSRcppM_OSRMroute(SEXP FromDFSEXP, SEXP ToDFSEXP, SEXP OSRMdataSEXP) {
+Rcpp::List OSRMroute(Rcpp::DataFrame FromDF, Rcpp::DataFrame ToDF, std::string OSRMdata, const Rcpp::NumericVector& nthreads);
+RcppExport SEXP _OSRcppM_OSRMroute(SEXP FromDFSEXP, SEXP ToDFSEXP, SEXP OSRMdataSEXP, SEXP nthreadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type FromDF(FromDFSEXP);
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type ToDF(ToDFSEXP);
     Rcpp::traits::input_parameter< std::string >::type OSRMdata(OSRMdataSEXP);
-    rcpp_result_gen = Rcpp::wrap(OSRMroute(FromDF, ToDF, OSRMdata));
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(OSRMroute(FromDF, ToDF, OSRMdata, nthreads));
     return rcpp_result_gen;
 END_RCPP
 }
-// OSRMrouteDF
-Rcpp::DataFrame OSRMrouteDF(Rcpp::DataFrame DF, std::string OSRMdata, std::string fromLon, std::string fromLat, std::string toLon, std::string toLat);
-RcppExport SEXP OSRcppM_OSRMrouteDF(SEXP DFSEXP, SEXP OSRMdataSEXP, SEXP fromLonSEXP, SEXP fromLatSEXP, SEXP toLonSEXP, SEXP toLatSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type DF(DFSEXP);
-    Rcpp::traits::input_parameter< std::string >::type OSRMdata(OSRMdataSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fromLon(fromLonSEXP);
-    Rcpp::traits::input_parameter< std::string >::type fromLat(fromLatSEXP);
-    Rcpp::traits::input_parameter< std::string >::type toLon(toLonSEXP);
-    Rcpp::traits::input_parameter< std::string >::type toLat(toLatSEXP);
-    rcpp_result_gen = Rcpp::wrap(OSRMrouteDF(DF, OSRMdata, fromLon, fromLat, toLon, toLat));
-    return rcpp_result_gen;
-END_RCPP
-}
-// OSRMrouteVec
-Rcpp::NumericVector OSRMrouteVec(const Rcpp::NumericVector& xlon, const Rcpp::NumericVector& xlat, const Rcpp::NumericVector& ylon, const Rcpp::NumericVector& ylat, std::string OSRMdata, std::string measure);
-RcppExport SEXP OSRcppM_OSRMrouteVec(SEXP xlonSEXP, SEXP xlatSEXP, SEXP ylonSEXP, SEXP ylatSEXP, SEXP OSRMdataSEXP, SEXP measureSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type xlon(xlonSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type xlat(xlatSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ylon(ylonSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ylat(ylatSEXP);
-    Rcpp::traits::input_parameter< std::string >::type OSRMdata(OSRMdataSEXP);
-    Rcpp::traits::input_parameter< std::string >::type measure(measureSEXP);
-    rcpp_result_gen = Rcpp::wrap(OSRMrouteVec(xlon, xlat, ylon, ylat, OSRMdata, measure));
-    return rcpp_result_gen;
-END_RCPP
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_OSRcppM_OSRMroute", (DL_FUNC) &_OSRcppM_OSRMroute, 4},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_OSRcppM(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

@@ -1,6 +1,5 @@
-
-PKG_LIBS=-losrm -lboost_filesystem-mt -lboost_iostreams-mt -lboost_system-mt \
-		-lboost_thread-mt -ltbb -ltbbmalloc -lz
-PKG_CPPFLAGS=-I/usr/local/include/osrm \
+PKG_LIBS=-losrm -lboost_filesystem -lboost_iostreams -lboost_system \
+		-lboost_thread -ltbb -ltbbmalloc -lz -fopenmp
+PKG_CPPFLAGS= -I/usr/local/include/osrm \
 		-I/usr/local/include/osrm-backendthird-party/libosmium/include \
-		-I/usr/local/include/luabind -I/usr/local/include/lua5.1
+		-I/usr/local/include/luabind -I/usr/local/include/lua5.1 -std=c++14 -fopenmp
