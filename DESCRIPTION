@@ -5,7 +5,7 @@ Version: 0.4
 Date: 2019-01-25
 Authors@R: c(
     person(family = "Benjamin Skinner", role = c("aut", "cre"),
-       comment = "First version", email = "b.skinner@vanderbilt.edu""),
+       comment = "First version", email = "b.skinner@vanderbilt.edu"),
     person("Benoit", "Thieurmel", role = c("aut", "ctb"),
        comment = "add pragma", email = "benoit.thieurmel@datastorm.fr")
     )
