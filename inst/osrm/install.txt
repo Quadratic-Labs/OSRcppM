@@ -1,0 +1,57 @@
+# installation / compilation de osrm backend
+# https://github.com/Project-OSRM/osrm-backend/wiki/Building-on-Ubuntu
+# https://github.com/Project-OSRM/osrm-backend
+
+scp -r /home/benoit/osrm_data/* benoitt@149.202.216.223:/home/benoitt/osrm/osrm-data/
+
+# version de ubuntu
+
+````
+lsb_release -c
+````
+
+# Ubuntu 14.04
+
+````
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install g++-6 gcc-6 build-essential git wget cmake3 pkg-config libbz2-dev libstxxl-dev libstxxl1 libxml2-dev libzip-dev libboost-all-dev lua5.2 liblua5.2-dev libtbb-dev
+````
+
+# update du lien gcc
+
+````
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
+````
+
+# importer le projet et se placer dedans
+# installation d'osrm depuis le source
+
+````
+mkdir -p build
+cd build
+cmake ..
+cmake --build .
+sudo cmake --build . --target install
+````
+
+# importation et preparation de la carte
+# https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM
+
+````
+cd /home/benoit/osrm-data
+wget http://download.geofabrik.de/europe/france-latest.osm.pbf
+
+osrm-extract france-latest.osm.pbf -p /usr/local/share/osrm/profiles/car.lua
+osrm-contract france-latest.osm
+
+osrm-routed  /home/benoit/osrm-data/france-latest.osm
+
+wget http://download.geofabrik.de/europe/france/nord-pas-de-calais-latest.osm.pbf
+osrm-extract nord-pas-de-calais-latest.osm.pbf -p /usr/local/share/osrm/profiles/car.lua
+osrm-contract nord-pas-de-calais-latest.osm
+
+osrm-routed  /home/benoit/osrm-data/france-latest.osm
+
+````
