@@ -5,3 +5,7 @@ OSRMroute <- function(FromDF, ToDF, OSRMdata, nthreads) {
     .Call('_OSRcppM_OSRMroute', PACKAGE = 'OSRcppM', FromDF, ToDF, OSRMdata, nthreads)
 }
 
+OSRMroute2 <- function(DF, OSRMdata, nthreads) {
+    .Call('_OSRcppM_OSRMroute2', PACKAGE = 'OSRcppM', DF, OSRMdata, nthreads)
+}
+

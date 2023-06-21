@@ -36,8 +36,16 @@ Rcpp::List OSRMroute(Rcpp::DataFrame FromDF,
   EngineConfig config;
   config.storage_config = {OSRMdata};
   config.use_shared_memory = false;
+  
+  // We support two routing speed up techniques:
+  // - Contraction Hierarchies (CH): requires extract+contract pre-processing
+  // - Multi-Level Dijkstra (MLD): requires extract+partition+customize pre-processing
+  //
+  //config.algorithm = EngineConfig::Algorithm::CH;
+  config.algorithm = EngineConfig::Algorithm::MLD;
+  
   OSRM osrm{config};
-
+  
   // init vectors for coordinates
   Rcpp::NumericVector xlat = FromDF["lat"];
   Rcpp::NumericVector xlon = FromDF["lon"];
@@ -109,4 +117,89 @@ Rcpp::List OSRMroute(Rcpp::DataFrame FromDF,
 
   return Rcpp::List::create(Rcpp::Named("meters") = dist,
 			    Rcpp::Named("seconds") = time);
+}
+
+
+// [[Rcpp::export]]
+Rcpp::List OSRMroute2(Rcpp::DataFrame DF,
+                     std::string OSRMdata, 
+                     const Rcpp::NumericVector& nthreads
+) {
+  
+  using namespace osrm;
+  
+  // set up configuration based on pre-compilied OSRM data
+  EngineConfig config;
+  config.storage_config = {OSRMdata};
+  config.use_shared_memory = false;
+  
+  // We support two routing speed up techniques:
+  // - Contraction Hierarchies (CH): requires extract+contract pre-processing
+  // - Multi-Level Dijkstra (MLD): requires extract+partition+customize pre-processing
+  //
+  //config.algorithm = EngineConfig::Algorithm::CH;
+  config.algorithm = EngineConfig::Algorithm::MLD;
+  
+  OSRM osrm{config};
+  
+  // init vectors for coordinates
+  Rcpp::NumericVector xlat = DF["lat_from"];
+  Rcpp::NumericVector xlon = DF["lon_from"];
+  Rcpp::NumericVector ylat = DF["lat_to"];
+  Rcpp::NumericVector ylon = DF["lon_to"];
+  
+  int n = xlat.size();
+  Rcpp::NumericVector dist(n);
+  Rcpp::NumericVector dura(n);
+  
+  omp_set_num_threads((int) nthreads[0]);
+  
+  #pragma omp parallel for
+  for (int i = 0; i < n; i++) {
+
+      // init route parameters
+      RouteParameters params;
+      
+      params.coordinates.push_back({util::FloatLongitude{xlon[i]},
+                                   util::FloatLatitude{xlat[i]}});
+      params.coordinates.push_back({util::FloatLongitude{ylon[i]},
+                                   util::FloatLatitude{ylat[i]}});
+      
+      // init JSON response object
+      json::Object result;
+      
+      // compute route
+      const auto status = osrm.Route(params, result);
+      
+      if (status == Status::Ok){
+        auto &routes = result.values["routes"].get<json::Array>();
+        
+        // take first response which is shortest (?) trip
+        auto &route = routes.values.at(0).get<json::Object>();
+        const auto distance = route.values["distance"].get<json::Number>().value;
+        const auto duration = route.values["duration"].get<json::Number>().value;
+        
+        // Warn users if extract does not contain the default coordinates from above
+        // error using pragma ?s
+        /*if (distance == 0 || duration == 0)
+         {
+         Rcpp::Rcout << "Note: distance or duration is zero. ";
+         Rcpp::Rcout << "You are probably doing a query outside of the OSM extract.\n";
+         }*/
+        
+        // store in matrices
+        dist(i) = distance;
+        dura(i) = duration;
+        
+      } else if (status == Status::Error) {
+        const auto code = result.values["code"].get<json::String>().value;
+        const auto message = result.values["message"].get<json::String>().value;
+        
+        Rcpp::Rcerr << "Code: " << code << "\n" << "Message: " << message << "\n";
+        
+      }
+  }
+  
+  return Rcpp::List::create(Rcpp::Named("meters") = dist,
+                            Rcpp::Named("seconds") = dura);
 }

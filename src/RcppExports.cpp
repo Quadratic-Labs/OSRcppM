@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // OSRMroute
 Rcpp::List OSRMroute(Rcpp::DataFrame FromDF, Rcpp::DataFrame ToDF, std::string OSRMdata, const Rcpp::NumericVector& nthreads);
 RcppExport SEXP _OSRcppM_OSRMroute(SEXP FromDFSEXP, SEXP ToDFSEXP, SEXP OSRMdataSEXP, SEXP nthreadsSEXP) {
@@ -19,9 +24,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// OSRMroute2
+Rcpp::List OSRMroute2(Rcpp::DataFrame DF, std::string OSRMdata, const Rcpp::NumericVector& nthreads);
+RcppExport SEXP _OSRcppM_OSRMroute2(SEXP DFSEXP, SEXP OSRMdataSEXP, SEXP nthreadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type DF(DFSEXP);
+    Rcpp::traits::input_parameter< std::string >::type OSRMdata(OSRMdataSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type nthreads(nthreadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(OSRMroute2(DF, OSRMdata, nthreads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_OSRcppM_OSRMroute", (DL_FUNC) &_OSRcppM_OSRMroute, 4},
+    {"_OSRcppM_OSRMroute2", (DL_FUNC) &_OSRcppM_OSRMroute2, 3},
     {NULL, NULL, 0}
 };
 
